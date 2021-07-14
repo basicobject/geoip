@@ -1,10 +1,12 @@
 package geoip
 
+import play.api.Logging
+
 import java.io.{File, FileInputStream, FileOutputStream}
 import java.util.zip.ZipInputStream
 import scala.util.{Failure, Success, Try}
 
-object Util {
+object Util extends Logging {
   def unzip(zipFile: String, outfile: String): Unit = {
     Try {
       val destFile = new File(outfile)
@@ -17,7 +19,7 @@ object Util {
       while (zipEntry != null) {
         val filename = zipEntry.getName
         val newFile = new File(outfile + File.separator + filename)
-        println("Created file " + newFile.getAbsoluteFile)
+        logger.info("Created file " + newFile.getAbsoluteFile)
         new File(newFile.getParent).mkdirs()
 
         val fos = new FileOutputStream(newFile)
@@ -31,8 +33,8 @@ object Util {
         zipEntry = zipStream.getNextEntry
       }
     } match {
-      case Success(_) => println("unzip successful")
-      case Failure(e) => println(e.getLocalizedMessage)
+      case Success(_) => logger.info("unzip successful")
+      case Failure(e) => logger.info(e.getLocalizedMessage)
     }
   }
 }

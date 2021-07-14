@@ -1,11 +1,13 @@
 package geoip
 
+import play.api.Logging
+
 import java.net.URI
 import java.net.http.{HttpClient, HttpRequest, HttpResponse}
 import java.nio.file.{Files, Paths}
 import scala.jdk.OptionConverters.RichOptional
 
-object MaxMind {
+object MaxMind extends Logging {
   // val UserId = 579112
   final val MaxmindLicenceKey = "1gUQkfyOKQLgERTb"
   final val DatabaseUrl =
@@ -27,7 +29,7 @@ object MaxMind {
     HttpRequest.newBuilder(URI.create(DatabaseUrl)).GET().build()
 
   def checkForUpdate: Either[String, (Boolean, String)] = {
-    println("Checking for database update from MaxMind")
+    logger.info("Checking for database update from MaxMind")
     val response =
       client.send(headRequest, HttpResponse.BodyHandlers.discarding())
 
@@ -51,7 +53,7 @@ object MaxMind {
   }
 
   def downloadDatabase() = {
-    println("Downloading database file archive from MaxMind")
+    logger.info("Downloading database file archive from MaxMind")
     client.send(
       downloadRequest,
       HttpResponse.BodyHandlers.ofFile(Paths.get(DatabaseZipFile))
@@ -59,7 +61,7 @@ object MaxMind {
   }
 
   def writeNewEtag(etag: String) = {
-    println("Updating new etag")
+    logger.info("Updating new etag")
     Files.writeString(Paths.get(EtagFile), etag)
   }
 }
